@@ -4,16 +4,21 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
 
 class AdminMiddleware
 {
     public function handle(Request $request, Closure $next): Response
     {
-        if (auth()->check() && auth()->user()->role === 'admin') {
+        if (Auth::check() && Auth::user()->role === 'admin') {
             return $next($request);
         }
-    
+
+        if ($request->is('login') || $request->is('logout')) {
+            return $next($request);
+        }
+
         return response()->view('layouts.admin.errors.admin-denied', [], 403);
     }
 }
