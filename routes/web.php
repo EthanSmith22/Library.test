@@ -29,7 +29,7 @@ Route::domain(config('app.project_domain'))->group(function () {
 
     return view('layouts.user.index', compact('books', 'authors', 'genres'));
     })->name('user.home');
-    });
+ 
     //Books
     Route::get('/books', [BookController::class, 'index'])->name('user.books');
     Route::get('/books/{book}', [BookController::class, 'show'])->name('user.books.show');
@@ -42,8 +42,11 @@ Route::domain(config('app.project_domain'))->group(function () {
     Route::get('/about', function () {return view('layouts.user.about');})->name('user.about');
 
     //login && signup
-    Route::get('/login', fn () => view('layouts.user.login'))->name('login');
-    Route::get('/register', fn () => view('layouts.user.register'))->name('register');
+    Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
+    Route::post('/login', [AuthController::class, 'login'])->name('login.submit');
+    
+    Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
+    Route::post('/register', [AuthController::class, 'register'])->name('register.submit');
 
     Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
     Route::post('/login', [AuthController::class, 'login'])->name('login.submit');
@@ -62,4 +65,6 @@ Route::domain(config('app.project_domain'))->group(function () {
     ->name('user.borrowings.request-return');
     Route::post('/borrowings/{borrowRecord}/cancel-return', [BorrowController::class, 'cancelReturn'])
     ->name('user.borrowings.cancel-return');
+
     
+});    

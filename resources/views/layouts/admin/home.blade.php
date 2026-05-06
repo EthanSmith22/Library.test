@@ -79,6 +79,18 @@
                         <span class="align-middle">View User Site</span>
                     </a>
                 </li>
+
+                <li class="sidebar-item">
+                    <form method="POST" action="{{ route('admin.logout') }}">
+                        @csrf
+                
+                        <button type="submit"
+                                class="sidebar-link border-0 bg-transparent w-100 text-start">
+                            <i class="align-middle" data-feather="log-out"></i>
+                            <span class="align-middle">Logout</span>
+                        </button>
+                    </form>
+                </li>
             </ul>
         </div>
     </nav>

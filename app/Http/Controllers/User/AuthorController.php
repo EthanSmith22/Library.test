@@ -21,4 +21,16 @@ class AuthorController extends Controller
     
         return view('layouts.user.author-detail', compact('author'));
     }
+
+    public function showAdminLogin(Request $request)
+    {
+        Auth::logout();
+    
+        session()->forget('member_id');
+    
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+    
+        return redirect()->route('login');
+    }
 }

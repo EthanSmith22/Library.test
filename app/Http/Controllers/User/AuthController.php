@@ -4,7 +4,9 @@ namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
 use App\Models\Member;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
@@ -50,23 +52,45 @@ class AuthController extends Controller
             'password' => ['required'],
         ]);
 
-        $member = Member::where('email', $data['email'])->first();
+        $user = User::where('email', $data['email'])->first();
 
-        if (! $member || ! Hash::check($data['password'], $member->password)) {
-            return back()->withErrors([
-                'email' => 'Invalid email or password.',
-            ])->onlyInput('email');
+        if ($user && Hash::check($data['password'], $user->password)) {
+        session()->forget('member_id');
+    
+        Auth::login($user);
+        $request->session()->regenerate();
+
+            if ($user->role === 'admin') {
+                return redirect('http://' . config('app.admin_domain'));
+            }
+
+            return redirect()->route('user.home');
         }
 
-        session(['member_id' => $member->id]);
+        $member = Member::where('email', $data['email'])->first();
 
-        return redirect()->route('user.home');
+        if ($member && Hash::check($data['password'], $member->password)) {
+            Auth::logout();
+        
+            session(['member_id' => $member->id]);
+        
+            return redirect()->route('user.home');
+        }
+
+        return back()->withErrors([
+            'email' => 'Invalid email or password.',
+        ])->onlyInput('email');
     }
 
-    public function logout()
+    public function logout(Request $request)
     {
+        Auth::logout();
+
         session()->forget('member_id');
 
-        return redirect()->route('login');
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return redirect('http://' . config('app.project_domain') . '/login');
     }
 }
