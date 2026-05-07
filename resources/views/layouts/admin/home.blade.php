@@ -35,23 +35,34 @@
                         <span class="align-middle">Books</span>
                     </a>
                 </li>
-            
-                <li class="sidebar-item">
-                    <a class="sidebar-link" href="#">
+                <li class="sidebar-item {{ request()->routeIs('admin.copies*') ? 'active' : '' }}">
+                    <a class="sidebar-link" href="{{ route('admin.copies') }}">
+                        <i class="align-middle" data-feather="book-open"></i>
+                        <span class="align-middle">Book Copies</span>
+                    </a>
+                </li>
+                <li class="sidebar-item {{ request()->routeIs('admin.book-stands*') ? 'active' : '' }}">
+                    <a class="sidebar-link" href="{{ route('admin.book-stands') }}">
+                        <i class="align-middle" data-feather="archive"></i>
+                        <span class="align-middle">Book Stands</span>
+                    </a>
+                </li>
+                <li class="sidebar-item {{ request()->routeIs('admin.authors*') ? 'active' : '' }}">
+                    <a class="sidebar-link" href="{{ route('admin.authors') }}">
                         <i class="align-middle" data-feather="users"></i>
                         <span class="align-middle">Authors</span>
                     </a>
                 </li>
             
-                <li class="sidebar-item">
-                    <a class="sidebar-link" href="#">
+                <li class="sidebar-item {{ request()->routeIs('admin.genres*') ? 'active' : '' }}">
+                    <a class="sidebar-link" href="{{ route('admin.genres') }}">
                         <i class="align-middle" data-feather="layers"></i>
                         <span class="align-middle">Genres</span>
                     </a>
                 </li>
             
-                <li class="sidebar-item">
-                    <a class="sidebar-link" href="#">
+                <li class="sidebar-item {{ request()->routeIs('admin.members*') ? 'active' : '' }}">
+                    <a class="sidebar-link" href="{{ route('admin.members') }}">
                         <i class="align-middle" data-feather="user"></i>
                         <span class="align-middle">Members</span>
                     </a>
@@ -59,8 +70,8 @@
             
                 <li class="sidebar-header">Library Flow</li>
             
-                <li class="sidebar-item">
-                    <a class="sidebar-link" href="#">
+                <li class="sidebar-item {{ request()->routeIs('admin.borrow-records*') ? 'active' : '' }}">
+                    <a class="sidebar-link" href="{{ route('admin.borrow-records') }}">
                         <i class="align-middle" data-feather="repeat"></i>
                         <span class="align-middle">Borrow Records</span>
                     </a>

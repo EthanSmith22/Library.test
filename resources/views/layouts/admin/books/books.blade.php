@@ -1,16 +1,29 @@
 @extends('layouts.admin.home')
 
 @section('content')
+<div class="d-flex justify-content-end mb-4">
+    <a href="{{ route('admin.dashboard') }}"
+       class="btn btn-light border shadow-sm rounded-pill px-3 py-2 d-inline-flex align-items-center gap-2 text-dark fw-semibold transition-all">
+        
+        <div class="rounded-circle bg-dark text-white d-flex align-items-center justify-content-center"
+            style="width:28px;height:28px;">
+            <i data-feather="arrow-left" style="width:14px;height:14px;"></i>
+        </div>
 
+        <span>Dashboard</span>
+    </a>
+</div>
 <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
     <div>
         <h1 class="h3 fw-bold mb-1">Book Management</h1>
         <p class="text-muted mb-0">Manage books, authors, genres, copies, and availability.</p>
     </div>
 
-    <a href="{{ route('admin.dashboard') }}" class="btn btn-outline-secondary btn-sm px-3">
-        <i data-feather="arrow-left" class="me-1"></i>
-        Dashboard
+
+    <a href="{{ route('admin.books.create') }}"
+           class="btn btn-primary d-flex align-items-center gap-2 px-3">
+            <i data-feather="plus"></i>
+            <span>Add Book</span>
     </a>
 </div>
 
@@ -163,133 +176,156 @@
                 <h5 class="fw-bold mb-1">Books List</h5>
                 <small class="text-muted">All books registered in the library database.</small>
             </div>
-
+            
             <span class="badge bg-light text-dark border px-3 py-2">
                 {{ $books->count() }} Results
             </span>
         </div>
     </div>
 
+    <div class="card border-0 shadow-sm">
     <div class="card-body p-0">
-        <div class="table-responsive">
-            <table class="table table-hover align-middle mb-0">
-                <thead class="table-light">
-                    <tr>
-                        <th class="ps-4">Book</th>
-                        <th>Author</th>
-                        <th>Genres</th>
-                        <th>Copies</th>
-                        <th>Availability</th>
-                        <th class="text-end pe-4">Action</th>
-                    </tr>
-                </thead>
-
-                <tbody>
-                    @forelse ($books as $book)
-                        @php
-                            $available = $book->copies->where('status', 'available')->count();
-                            $borrowed = $book->copies->where('status', 'borrowed')->count();
-                            $pending = $book->copies->where('status', 'pending_return')->count();
-                            $totalCopies = $book->copies->count();
-                        @endphp
-
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+    
+                    <thead class="table-light">
                         <tr>
-                            <td class="ps-4">
-                                <div class="d-flex align-items-center gap-3">
-                                    <div class="rounded-4 bg-primary bg-opacity-10 text-primary d-flex align-items-center justify-content-center flex-shrink-0"
-                                         style="width: 48px; height: 48px;">
-                                        <i data-feather="book"></i>
+                            <th class="ps-4">Book</th>
+                            <th>Author</th>
+                            <th>Genres</th>
+                            <th>Total</th>
+                            <th>Available</th>
+                            <th>Borrowed</th>
+                            <th>Status</th>
+                            <th class="text-end pe-4">Action</th>
+                        </tr>
+                    </thead>
+    
+                    <tbody>
+                        @forelse ($books as $book)
+    
+                            @php
+                                $isAvailable = $book->available_copies_count > 0;
+                            @endphp
+    
+                            <tr>
+    
+                                <td class="ps-4">
+                                    <div class="d-flex align-items-center gap-3">
+    
+                                        @if($book->cover_image)
+                                            <img src="{{ asset($book->cover_image) }}"
+                                                 class="rounded shadow-sm"
+                                                 style="width:55px;height:75px;object-fit:cover;">
+                                        @else
+                                            <div class="rounded bg-light d-flex align-items-center justify-content-center"
+                                                 style="width:55px;height:75px;">
+                                                <i data-feather="book"></i>
+                                            </div>
+                                        @endif
+    
+                                        <div>
+                                            <p class="fw-semibold mb-0">
+                                                {{ $book->title }}
+                                            </p>
+    
+                                            <small class="text-muted">
+                                                ISBN: {{ $book->isbn ?? 'N/A' }}
+                                            </small>
+                                        </div>
                                     </div>
-
-                                    <div>
-                                        <p class="fw-semibold mb-0">{{ $book->title }}</p>
-                                        <small class="text-muted">
-                                            {{ Str::limit($book->description ?? 'No description available.', 55) }}
-                                        </small>
+                                </td>
+    
+                                <td>
+                                    {{ $book->author?->name ?? 'Unknown' }}
+                                </td>
+    
+                                <td>
+                                    <div class="d-flex flex-wrap gap-1">
+                                        @foreach($book->genres as $genre)
+                                            <span class="badge bg-light text-dark border">
+                                                {{ $genre->name }}
+                                            </span>
+                                        @endforeach
                                     </div>
-                                </div>
-                            </td>
-
-                            <td>
-                                <span class="fw-semibold">
-                                    {{ $book->author?->name ?? 'Unknown Author' }}
-                                </span>
-                            </td>
-
-                            <td>
-                                <div class="d-flex flex-wrap gap-1">
-                                    @forelse ($book->genres as $genre)
-                                        <span class="badge bg-light text-dark border">
-                                            {{ $genre->name }}
+                                </td>
+    
+                                <td>
+                                    <span class="badge bg-dark px-3 py-2">
+                                        {{ $book->copies_count }}
+                                    </span>
+                                </td>
+    
+                                <td>
+                                    <span class="badge bg-success px-3 py-2">
+                                        {{ $book->available_copies_count }}
+                                    </span>
+                                </td>
+    
+                                <td>
+                                    <span class="badge bg-warning text-dark px-3 py-2">
+                                        {{ $book->borrowed_copies_count }}
+                                    </span>
+                                </td>
+    
+                                <td>
+                                    @if($isAvailable)
+                                        <span class="badge bg-success bg-opacity-10 text-success px-3 py-2">
+                                            Available
                                         </span>
-                                    @empty
-                                        <span class="text-muted small">No genre</span>
-                                    @endforelse
-                                </div>
-                            </td>
-
-                            <td>
-                                <div class="small">
-                                    <div class="d-flex gap-2">
-                                        <span class="text-muted">Total:</span>
-                                        <strong>{{ $totalCopies }}</strong>
+                                    @else
+                                        <span class="badge bg-danger bg-opacity-10 text-danger px-3 py-2">
+                                            Unavailable
+                                        </span>
+                                    @endif
+                                </td>
+    
+                                <td class="text-end pe-4">
+                                    <div class="d-flex justify-content-end gap-2">
+    
+                                        <a href="{{ route('admin.copies.create', ['book_id' => $book->id]) }}"
+                                           class="btn btn-outline-success btn-sm">
+                                            <i class="align-middle me-1" data-feather="copy"></i>
+                                            Add Copies
+                                        </a>
+    
+                                        <a href="{{ route('admin.books.edit', $book) }}"
+                                           class="btn btn-outline-primary btn-sm">
+                                            <i class="align-middle me-1" data-feather="edit"></i>
+                                            Edit
+                                        </a>
+    
+                                        <form action="{{ route('admin.books.destroy', $book) }}"
+                                              method="POST"
+                                              onsubmit="return confirm('Delete this book?')">
+    
+                                            @csrf
+                                            @method('DELETE')
+    
+                                            <button class="btn btn-outline-danger btn-sm">
+                                                <i class="align-middle me-1" data-feather="trash"></i>
+                                                Delete
+                                            </button>
+                                        </form>
+    
                                     </div>
-                                    <div class="d-flex gap-2">
-                                        <span class="text-muted">Borrowed:</span>
-                                        <strong>{{ $borrowed }}</strong>
-                                    </div>
-                                </div>
-                            </td>
-
-                            <td>
-                                @if ($available > 0)
-                                    <span class="badge bg-success bg-opacity-10 text-success px-3 py-2">
-                                        {{ $available }} Available
-                                    </span>
-                                @elseif ($pending > 0)
-                                    <span class="badge bg-info bg-opacity-10 text-info px-3 py-2">
-                                        Pending Return
-                                    </span>
-                                @else
-                                    <span class="badge bg-secondary bg-opacity-10 text-secondary px-3 py-2">
-                                        Unavailable
-                                    </span>
-                                @endif
-                            </td>
-
-                            <td class="text-end pe-4">
-                                <div class="d-flex justify-content-end gap-2">
-                                    <a href="{{ route('user.books.show', $book) }}"
-                                       class="btn btn-outline-secondary btn-sm"
-                                       target="_blank">
-                                        View
-                                    </a>
-
-                                    <button class="btn btn-outline-primary btn-sm" disabled>
-                                        Edit
-                                    </button>
-
-                                    <button class="btn btn-outline-danger btn-sm" disabled>
-                                        Delete
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
-                    @empty
-                        <tr>
-                            <td colspan="6" class="text-center py-5">
-                                <div class="rounded-circle bg-light d-flex align-items-center justify-content-center mx-auto mb-3"
-                                     style="width: 64px; height: 64px;">
-                                    <i data-feather="inbox" class="text-muted"></i>
-                                </div>
-
-                                <h5 class="fw-bold mb-1">No books found</h5>
-                                <p class="text-muted mb-0">Try changing your search or filter.</p>
-                            </td>
-                        </tr>
-                    @endforelse
-                </tbody>
-            </table>
+                                </td>
+    
+                            </tr>
+    
+                        @empty
+    
+                            <tr>
+                                <td colspan="8" class="text-center py-5 text-muted">
+                                    No books found.
+                                </td>
+                            </tr>
+    
+                        @endforelse
+                    </tbody>
+    
+                </table>
+            </div>
         </div>
     </div>
 </div>

@@ -21,4 +21,4 @@ class AdminMiddleware
 
         return response()->view('layouts.admin.errors.admin-denied', [], 403);
     }
-}
+}   
